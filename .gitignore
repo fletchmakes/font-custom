@@ -1,3 +1,7 @@
+# Other ignorables
+**/test fonts/
+**/.DS_STORE
+
 # Compiled Lua sources
 luac.out
 
