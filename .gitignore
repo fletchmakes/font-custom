@@ -1,5 +1,5 @@
 # Other ignorables
-**/test fonts/
+**/test_fonts/
 **/.DS_STORE
 
 # Compiled Lua sources

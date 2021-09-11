@@ -1,17 +1,10 @@
 -- helper methods
--- see if the file exists
-local function file_exists(file)
-    -- https://stackoverflow.com/questions/11201262/how-to-read-data-from-a-file-in-lua
-    local f = io.open(file, "rb")
-    if f then f:close() end
-    return f ~= nil
-end
-  
+
 -- get all lines from a file, returns an empty 
 -- list/table if the file does not exist
 local function lines_from(file)
     -- https://stackoverflow.com/questions/11201262/how-to-read-data-from-a-file-in-lua
-    if not file_exists(file) then return {} end
+    if not app.fs.isFile(file) then return {} end
     lines = {}
     for line in io.lines(file) do 
         lines[#lines + 1] = line
@@ -26,13 +19,16 @@ local function starts_with(str, start)
 end
 
 -- create an error alert and exit the dialog
-local function create_error(str, dialog)
+local function create_error(str, dialog, exit)
     app.alert(str)
-    dialog:close()
+    if (exit == 1) then dialog:close() end
 end
 
 -- grab pixel info from the image for the given character
 local function get_pixel_data(image, char)
+    -- check if the character is a space
+    if (char == " ") then return {} end
+
     local idx = string.find(props.alphabet, char) - 1
 
     -- identify the "letter cell" in the font atlas that we need to scan
@@ -58,8 +54,9 @@ end
 
 -- write pixel info to an image
 local function write_pixel_data(image, x, y, pixels)
-    for i = 0, (props.height-1) do
-        for j = 0, (props.width-1) do
+    for i = 0, #pixels do
+        if not pixels[i] then break end
+        for j = 0, #pixels[i] do
             image:drawPixel(j + x, i + y, pixels[i][j])
         end
     end
@@ -106,6 +103,11 @@ local function update_dialog_with_props(dialog)
         id="no_data_label",
         visible=false
     }
+
+    dialog:modify {
+        id="ok",
+        enabled=true
+    }
 end
 
 -- properties object to be used later
@@ -140,8 +142,8 @@ dlg:button {
         local props_filename = dlg.data.props
 
         -- attempt to load the properties
-        if (not file_exists(props_filename)) then
-            create_error("Oh no! Error loading the properties file.", dlg)
+        if (not app.fs.isFile(props_filename)) then
+            create_error("Oh no! Error loading the properties file.", dlg, 0)
             return
         end
 
@@ -160,41 +162,51 @@ dlg:button {
             elseif starts_with(line, "height") then
                 props.height = tonumber(string.match(line, "=(.*)"))
             else
-                create_error("Unknown property: "..line, dlg)
+                create_error("Unknown property: "..line, dlg, 0)
                 return
             end
         end
 
         -- validate all properties exist
-        if (props.alphabet == "") or (props.sprite == "") or (props.rows < 1) or (props.cols < 1) or 
-           (props.width < 1) or (props.height < 1) then
-            create_error("Missing essential property.", dlg)
+        if (props.alphabet == "") then
+            create_error("Missing an essential property: alphabet", dlg, 0)
             return
         end
 
-        -- get the full-file path for the sprite file
-        -- the line gets the path separator for the current os. \ for Windows and / for everything else
-        local path_sep = ""
-        local os_check = os.getenv("HOME")
-		if (os_check ~= nil) then
-            -- Unix-based Systems
-            path_sep = "/"
-        else
-            -- Windows
-            path_sep = "\\"
+        if (props.sprite == "") then
+            create_error("Missing an essential property: sprite", dlg, 0)
+            return
         end
 
-        -- sprite filepath can be absolute
-        local full_path = props.sprite
+        if (props.rows < 0) then
+            create_error("Missing an essential property: rows", dlg, 0)
+            return
+        end
+
+        if (props.cols < 0) then
+            create_error("Missing an essential property: cols", dlg, 0)
+            return
+        end
+
+        if (props.width < 0) then
+            create_error("Missing an essential property: width", dlg, 0)
+            return
+        end
+
+        if (props.height < 0) then
+            create_error("Missing an essential property: height", dlg, 0)
+            return
+        end
+
         -- if the filename is relative, try to find it in the same directory as the properties file
-        if (not string.find(props.sprite, path_sep)) then
-            full_path = string.match(props_filename, ".*"..path_sep)
-            props.sprite = full_path..props.sprite
+        if (not string.find(props.sprite, app.fs.pathSeparator)) then
+            local full_path = app.fs.joinPath(app.fs.filePath(props_filename), props.sprite)
+            props.sprite = full_path
         end
 
         -- check for existence
-        if (not file_exists(props.sprite)) then
-            create_error("Oh no! I could not find the sprite file on the file system.", dlg)
+        if (not app.fs.isFile(props.sprite)) then
+            create_error("No sprite file found at location: "..props.sprite, dlg, 0)
             return
         end
 
@@ -272,52 +284,55 @@ dlg:button {
     id = "ok",
     text = "OK",
     focus = false,
+    enabled = false,
     onclick = function()
-        local text = dlg.data.text
+        app.transaction( function()
+            local text = dlg.data.text
 
-        -- validate the text field is not blank
-        if (text == "") then
-            create_error("Oh no! The text field was left blank.", dlg)
-            return
-        end
-
-        -- validate the text does not use any characters not defined in the alphabet
-        for char in text:gmatch"." do
-            if (not string.find(props.alphabet, char)) then
-                create_error("Oh no! Text has characters not defined by the alphabet.", dlg)
+            -- validate the text field is not blank
+            if (text == "") then
+                create_error("Oh no! The text field was left blank.", dlg, 0)
                 return
             end
-        end
-
-        -- save the current sprite into a variable so we can manipulate it later
-        local img_sprite = app.activeSprite
-        local layer = img_sprite:newLayer()
-        layer.name = "CUSTOM TEXT"
-        local img_cel = img_sprite:newCel(layer, app.activeFrame)
-        local img_image = img_cel.image
-
-        -- open the sprite
-        local font_sprite = app.open(props.sprite)
-        -- flatten the sprite so it only has 1 layer
-        font_sprite:flatten()
-        local font_image = font_sprite.layers[1]:cel(1).image
-
-        -- paint every character in the text string to the destination image
-        for i = 1, #text do
-            -- get the pixels to paint onto the new image
-            local char = text:sub(i, i)
-            local pixels = get_pixel_data(font_image, char)
-
-            local x = 5 + ((i-1) * props.width)
-            local y = 5
-
-            -- paint them on the new image
-            write_pixel_data(img_image, x, y, pixels)
-        end
-
-        -- wrap up the dialog
-        font_sprite:close() -- THIS DOES NOT SAVE THE SPRITE (which is what we want)
-        dlg:close()
+    
+            -- validate the text does not use any characters not defined in the alphabet
+            for char in text:gmatch"." do
+                if (not string.find(props.alphabet, char)) and (char ~= " ") then
+                    create_error("Oh no! Text has characters not defined by the alphabet.", dlg, 0)
+                    return
+                end
+            end
+    
+            -- save the current sprite into a variable so we can manipulate it later
+            local img_sprite = app.activeSprite
+            local layer = img_sprite:newLayer()
+            layer.name = "CUSTOM TEXT"
+            local img_cel = img_sprite:newCel(layer, app.activeFrame)
+            local img_image = img_cel.image
+    
+            -- open the sprite
+            local font_sprite = app.open(props.sprite)
+            -- flatten the sprite so it only has 1 layer
+            font_sprite:flatten()
+            local font_image = font_sprite.layers[1]:cel(1).image
+    
+            -- paint every character in the text string to the destination image
+            for i = 1, #text do
+                -- get the pixels to paint onto the new image
+                local char = text:sub(i, i)
+                local pixels = get_pixel_data(font_image, char)
+    
+                local x = 0 + ((i-1) * props.width)
+                local y = 0
+    
+                -- paint them on the new image
+                write_pixel_data(img_image, x, y, pixels)
+            end
+    
+            -- wrap up the dialog
+            font_sprite:close() -- THIS DOES NOT SAVE THE SPRITE (which is what we want)
+            dlg:close()
+        end)
     end
 }
 
@@ -327,5 +342,13 @@ local function cancelWizard(dlg)
     dlg:close()
 end
 
--- display the dialog to the user
-dlg:show{ wait=false, bounds=Rectangle{dlg.bounds.x, dlg.bounds.y, 300, dlg.bounds.height} }
+-- show to grab centered coordinates
+dlg:show{ wait=false }
+
+-- quickly swap out the coords so we can force a larger width
+local x = (dlg.bounds.x - math.floor(450 / 4))
+local y = dlg.bounds.y
+local width = 400
+local height = dlg.bounds.height
+
+dlg.bounds = Rectangle{x, y, width, height}
