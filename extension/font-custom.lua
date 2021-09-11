@@ -181,6 +181,19 @@ dlg:button {
             return
         end
 
+        -- default certain values so that we don't hit undefined errors
+        if (props.atlas.character_widths == nil) then
+            props.atlas.character_widths = {}
+        end
+
+        if (props.default_spacing == nil) then
+            props.default_spacing = 1
+        end
+
+        if (props.kerning == nil) then
+            props.kerning = {}
+        end
+
         -- if the filename is relative, try to find it in the same directory as the properties file
         if (not string.find(props.sprite_path, app.fs.pathSeparator)) then
             local full_path = app.fs.joinPath(app.fs.filePath(props_filename), props.sprite_path)
@@ -299,17 +312,36 @@ dlg:button {
             font_sprite:flatten()
             local font_image = font_sprite.layers[1]:cel(1).image
     
+            local last_char = ""
+            local x = 0
+            local y = 0
             -- paint every character in the text string to the destination image
             for i = 1, #text do
                 -- get the pixels to paint onto the new image
                 local char = text:sub(i, i)
                 local pixels = get_pixel_data(font_image, char)
     
-                local x = 0 + ((i-1) * props.atlas.default_width)
-                local y = 0
-    
+                -- shift our 'cursor' over to get ready for the next letter
+                if (last_char ~= "") then 
+                    -- if the character has a special width value, use that instead
+                    if (props.atlas.character_widths[last_char] ~= nil) then
+                        x = x + props.atlas.character_widths[last_char] + props.default_spacing
+                    else
+                        x = x + props.atlas.default_width + props.default_spacing
+                    end
+                    -- add the kerning value if the current character has a special pairing with the previous
+                    if (props.kerning[last_char] ~= nil) then
+                        if (string.find(props.kerning[last_char].paired_with, char)) then
+                            x = x + props.kerning[last_char].spacing
+                        end
+                    end
+                end
+                    
                 -- paint them on the new image
                 write_pixel_data(img_image, x, y, pixels)
+                
+                -- remember the last character we printed
+                last_char = char
             end
     
             -- wrap up the dialog
