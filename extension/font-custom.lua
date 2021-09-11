@@ -1,21 +1,15 @@
+-- import libraries
+local json_lib_path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "font-custom", "json.lua")
+json = dofile(json_lib_path)
+
 -- helper methods
-
--- get all lines from a file, returns an empty 
--- list/table if the file does not exist
-local function lines_from(file)
-    -- https://stackoverflow.com/questions/11201262/how-to-read-data-from-a-file-in-lua
-    if not app.fs.isFile(file) then return {} end
-    lines = {}
-    for line in io.lines(file) do 
-        lines[#lines + 1] = line
-    end
-    return lines
-end
-
--- check if a string starts with a certain sub-string
-local function starts_with(str, start)
-    -- http://lua-users.org/wiki/StringRecipes
-    return str:sub(1, #start) == start
+-- get everything from a file, returns an empty string if the file does not exist
+local function file_to_str(filename)
+    if not app.fs.isFile(filename) then return "" end
+    local file = io.open(filename)
+    local str = file:read("*a")
+    file:close()
+    return str
 end
 
 -- create an error alert and exit the dialog
@@ -32,17 +26,17 @@ local function get_pixel_data(image, char)
     local idx = string.find(props.alphabet, char) - 1
 
     -- identify the "letter cell" in the font atlas that we need to scan
-    local row = math.floor(idx / props.cols)
-    local col = idx % props.cols
+    local row = math.floor(idx / props.atlas.cols)
+    local col = idx % props.atlas.cols
 
-    local px_x = col * props.width
-    local px_y = row * props.height
+    local px_x = col * props.atlas.default_width
+    local px_y = row * props.atlas.default_height
 
     -- now, scan every pixel into a handy table that we can read from later
     local pixels = {}
-    for i = 0, (props.height - 1) do -- rows
+    for i = 0, (props.atlas.default_height - 1) do -- rows
         pixels[i] = {}
-        for j = 0, (props.width - 1) do -- columns
+        for j = 0, (props.atlas.default_width - 1) do -- columns
             local newx = px_x + j
             local newy = px_y + i
             pixels[i][j] = image:getPixel(newx, newy)
@@ -72,31 +66,31 @@ local function update_dialog_with_props(dialog)
     dialog:modify {
         id="sprite_label",
         visible=true,
-        text=props.sprite
+        text=props.sprite_path
     }
 
     dialog:modify {
         id="rows_label",
         visible=true,
-        text=props.rows
+        text=props.atlas.rows
     }
 
     dialog:modify {
         id="cols_label",
         visible=true,
-        text=props.cols
+        text=props.atlas.cols
     }
 
     dialog:modify {
         id="width_label",
         visible=true,
-        text=props.width
+        text=props.atlas.default_width
     }
 
     dialog:modify {
         id="height_label",
         visible=true,
-        text=props.height
+        text=props.atlas.default_height
     }
 
     dialog:modify {
@@ -130,7 +124,7 @@ dlg:file {
     label="Open Properties File",
     title="Properties File",
     open=true,
-    filetypes={ "txt" } 
+    filetypes={ "json" } 
 }
 
 -- read properties in and display to user
@@ -147,25 +141,14 @@ dlg:button {
             return
         end
 
-        local props_lines = lines_from(props_filename)
-        for idx, line in pairs(props_lines) do
-            if starts_with(line, "alphabet") then
-                props.alphabet = string.match(line, "=(.*)")
-            elseif starts_with(line, "sprite") then
-                props.sprite = string.match(line, "=(.*)")
-            elseif starts_with(line, "rows") then
-                props.rows = tonumber(string.match(line, "=(.*)"))
-            elseif starts_with(line, "cols") then
-                props.cols = tonumber(string.match(line, "=(.*)"))
-            elseif starts_with(line, "width") then
-                props.width = tonumber(string.match(line, "=(.*)"))
-            elseif starts_with(line, "height") then
-                props.height = tonumber(string.match(line, "=(.*)"))
-            else
-                create_error("Unknown property: "..line, dlg, 0)
-                return
-            end
+        -- read and parse the file
+        local json_str = file_to_str(props_filename)
+        if (json_str == "") then 
+            create_error("Oh no! Error reading the properties file.", dlg, 0)
+            return
         end
+
+        props = json.decode(json_str)
 
         -- validate all properties exist
         if (props.alphabet == "") then
@@ -173,40 +156,40 @@ dlg:button {
             return
         end
 
-        if (props.sprite == "") then
+        if (props.sprite_path == "") then
             create_error("Missing an essential property: sprite", dlg, 0)
             return
         end
 
-        if (props.rows < 0) then
+        if (props.atlas.rows < 0) then
             create_error("Missing an essential property: rows", dlg, 0)
             return
         end
 
-        if (props.cols < 0) then
+        if (props.atlas.cols < 0) then
             create_error("Missing an essential property: cols", dlg, 0)
             return
         end
 
-        if (props.width < 0) then
+        if (props.atlas.default_width < 0) then
             create_error("Missing an essential property: width", dlg, 0)
             return
         end
 
-        if (props.height < 0) then
+        if (props.atlas.default_height < 0) then
             create_error("Missing an essential property: height", dlg, 0)
             return
         end
 
         -- if the filename is relative, try to find it in the same directory as the properties file
-        if (not string.find(props.sprite, app.fs.pathSeparator)) then
-            local full_path = app.fs.joinPath(app.fs.filePath(props_filename), props.sprite)
-            props.sprite = full_path
+        if (not string.find(props.sprite_path, app.fs.pathSeparator)) then
+            local full_path = app.fs.joinPath(app.fs.filePath(props_filename), props.sprite_path)
+            props.sprite_path = full_path
         end
 
         -- check for existence
-        if (not app.fs.isFile(props.sprite)) then
-            create_error("No sprite file found at location: "..props.sprite, dlg, 0)
+        if (not app.fs.isFile(props.sprite_path)) then
+            create_error("No sprite file found at location: "..props.sprite_path, dlg, 0)
             return
         end
 
@@ -311,7 +294,7 @@ dlg:button {
             local img_image = img_cel.image
     
             -- open the sprite
-            local font_sprite = app.open(props.sprite)
+            local font_sprite = app.open(props.sprite_path)
             -- flatten the sprite so it only has 1 layer
             font_sprite:flatten()
             local font_image = font_sprite.layers[1]:cel(1).image
@@ -322,7 +305,7 @@ dlg:button {
                 local char = text:sub(i, i)
                 local pixels = get_pixel_data(font_image, char)
     
-                local x = 0 + ((i-1) * props.width)
+                local x = 0 + ((i-1) * props.atlas.default_width)
                 local y = 0
     
                 -- paint them on the new image
