@@ -3,7 +3,7 @@ Create new fonts with Aseprite and load them in to be used in your projects!
 
 All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characters you'd like to use) and a simple `.json` file that describe the properties of the font.
 
-[a demonstration](./demo.png)
+![a demonstration](./demo.png)
 
 ## How to Use Font Custom
 
