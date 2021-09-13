@@ -1,6 +1,7 @@
 # Other ignorables
 **/test_fonts/
 **/.DS_STORE
+demo.xcf
 
 # Compiled Lua sources
 luac.out
