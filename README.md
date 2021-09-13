@@ -10,7 +10,7 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
 ## FAQ
 
 * Does this extension create fonts from my pixel art? (i.e., export to .ttf, .otf, etc)
-    * No, unfortunately it does not create font files. It does, however, give you the option to use your custom font within Aseprite as if you were using the `Include Text` menu option.
+    * No, unfortunately it does not create font files. It does, however, give you the option to use your custom font within Aseprite as if you were using the `Edit > Insert Text` menu option.
 * Why aren't special characters like `Ð`, `Þ`, `Æ`, or others working?
     * Unfortunately, for now, this extension can only handle the ASCII standard (UTF-8). I am investigating how we can modify the extension in the future to allow for UTF-16 and UTF-32 compliant characters!
 
