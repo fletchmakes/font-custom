@@ -18,10 +18,15 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
 
 1. Download this extension by visiting the releases page!
 2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that. **Save this file as `.png`, `.ase`, or `.aseprite`!**
+
 ![gif for font creation](./assets/font_creation.gif)
+
 3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./examples/example.json) file you can find here as a stepping stool.
+
 ![gif for property creation](./assets/properties_creation.gif)
+
 4. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
+
 ![gif for using extension](./assets/using_extension.gif)
 
 ## Things to Know
