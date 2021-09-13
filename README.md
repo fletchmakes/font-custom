@@ -1,4 +1,5 @@
 # Font Custom
+![hero image](./hero.png)
 Create new fonts with Aseprite and load them in to be used in your projects!
 
 All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characters you'd like to use) and a simple `.json` file that describe the properties of the font.
@@ -7,9 +8,10 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
 
 ## How to Use Font Custom
 
-1. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that.
-2. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./example.json) file you can find here as a stepping stool.
-3. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
+1. Download this extension by visiting the releases page!
+2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that.
+3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./example.json) file you can find here as a stepping stool.
+4. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
 
 ## Things to Know
 1. In your properties file, not every "object" is mandatory. All possible objects are listed below; mandatory objects have a `*` next to them. DO NOT include the asterix in the key-names in your properties file (use [example.json](./example.json) as a template).
