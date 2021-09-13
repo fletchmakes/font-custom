@@ -1,21 +1,31 @@
 # Font Custom
-![hero image](./hero.png)
+![hero image](./assets/hero.png)
 
 Create new fonts with Aseprite and load them in to be used in your projects!
 
 All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characters you'd like to use) and a simple `.json` file that describe the properties of the font.
 
-![a demonstration](./demo.png)
+![a demonstration](./assets/demo.png)
+
+## FAQ
+
+* Does this extension create fonts from my pixel art? (i.e., export to .ttf, .otf, etc)
+    * No, unfortunately it does not create font files. It does, however, give you the option to use your custom font within Aseprite as if you were using the `Include Text` menu option.
+* Why aren't special characters like `Ð`, `Þ`, `Æ`, or others working?
+    * Unfortunately, for now, this extension can only handle the ASCII standard (UTF-8). I am investigating how we can modify the extension in the future to allow for UTF-16 and UTF-32 compliant characters!
 
 ## How to Use Font Custom
 
 1. Download this extension by visiting the releases page!
-2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that.
-3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./example.json) file you can find here as a stepping stool.
+2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that. **Save this file as `.png`, `.ase`, or `.aseprite`!**
+![gif for font creation](./assets/font_creation.gif)
+3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./examples/example.json) file you can find here as a stepping stool.
+![gif for property creation](./assets/properties_creation.gif)
 4. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
+![gif for using extension](./assets/using_extension.gif)
 
 ## Things to Know
-1. In your properties file, not every "object" is mandatory. All possible objects are listed below; mandatory objects have a `*` next to them. DO NOT include the asterix in the key-names in your properties file (use [example.json](./example.json) as a template).
+1. In your properties file, not every "object" is mandatory. All possible objects are listed below; mandatory objects have a `*` next to them. DO NOT include the asterix in the key-names in your properties file (use [example.json](./examples/example.json) as a template).
     * `*alphabet` - a list of all of the characters found in the font file. Due to technical reasons, the list of characters must _match exactly_ the ordering found in the font file (left to right, top to bottom).
     * `*sprite_path` - a pointer to the sprite file that contains the font. Valid file extensions are `.png`, `.ase`, or `.aseprite`. If a _relative_ file name is given, the extension will look for a font file in the same directory as the property file (recommended). However, you can also give it an _absolute_ file name anywhere on your computer to locate the font file, if desired.
     * `*atlas` - an object containing information relevant to the construction of each character in the alphabet
@@ -36,7 +46,7 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
 
 ## Credits
 
-This extension was commissioned by `dani boye` on the [Aseprite Discord server](https://discord.gg/Rt5S6NZFkK)
+This extension was commissioned by `dani boye` on the [Aseprite Discord server](https://discord.gg/Rt5S6NZFkK). He also provided the [6_by_9.png](./examples/6_by_9.png) to use as an example font!
 
 The json-parsing library, `json.lua`, was provided by `rxi` under the MIT License: https://github.com/rxi/json.lua
 
