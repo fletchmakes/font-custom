@@ -37,5 +37,5 @@ This extension was commissioned by `dani boye` on the [Aseprite Discord server](
 
 The json-parsing library, `json.lua`, was provided by `rxi` under the MIT License: https://github.com/rxi/json.lua
 
-As an advocate of open-source software, feel free to suggest edits, or just fork this repository and make your own! The license on this software is open for commercial and private use. This extension will remain free forever; however, if you'd like to buy me a coffee, you can do so [here](https://ko-fi.com/fletchmakesstuff)
+As an advocate of open-source software, feel free to suggest edits, or just fork this repository and make your own! The license on this software is open for commercial and private use. This extension will remain free forever; however, if you'd like to buy me a coffee, you can do so [here](https://ko-fi.com/fletchmakesstuff).
 
