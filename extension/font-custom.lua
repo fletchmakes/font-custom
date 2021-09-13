@@ -1,3 +1,25 @@
+-- MIT License
+
+-- Copyright (c) 2021 David Fletcher
+
+-- Permission is hereby granted, free of charge, to any person obtaining a copy
+-- of this software and associated documentation files (the "Software"), to deal
+-- in the Software without restriction, including without limitation the rights
+-- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+-- copies of the Software, and to permit persons to whom the Software is
+-- furnished to do so, subject to the following conditions:
+
+-- The above copyright notice and this permission notice shall be included in all
+-- copies or substantial portions of the Software.
+
+-- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+-- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+-- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+-- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+-- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+-- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+-- SOFTWARE.
+
 -- import libraries
 local json_lib_path = app.fs.joinPath(app.fs.userConfigPath, "extensions", "font-custom", "json.lua")
 json = dofile(json_lib_path)
@@ -278,7 +300,9 @@ dlg:button {
             return
         end
 
-        props = json.decode(json_str)
+        local status, val = pcall(json.decode, json_str)
+        if (not status) then create_error(val, dlg, 0) return
+        else props = val end
 
         -- validate all essential properties exist
         if (not props.alphabet) or (props.alphabet == "") then
@@ -470,6 +494,7 @@ dlg:button {
             end
 
             -- wrap up the dialog
+            app.activeSprite = img_sprite
             dlg:close()
         end ) -- end transaction
     end
