@@ -1,5 +1,5 @@
 {
-    "alphabet": "abcdefghijklmnopqrstuvwxyz?!.,",
+    "alphabet": "abcdefghijklmnopqrstuvwxyz!?.,",
     "sprite_path": "6_by_9.png",
     "atlas": {
         "rows": 6,
