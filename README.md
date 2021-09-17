@@ -23,15 +23,15 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
 1. Download this extension by visiting the releases page!
 2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that. **Save this file as `.png`, `.ase`, or `.aseprite`!**
 
-![gif for font creation](https://media.giphy.com/media/rPHEAnZYVDzcJ5ibR1/giphy-downsized-large.gif?cid=790b76117b2dc73e0ecf46e24ddc77c3a619f338dc40a823&rid=giphy-downsized-large.gif&ct=g)
+![gif for font creation](https://media.giphy.com/media/rPHEAnZYVDzcJ5ibR1/giphy-downsized.gif?cid=790b76117b2dc73e0ecf46e24ddc77c3a619f338dc40a823&rid=giphy-downsized.gif&ct=g)
 
 3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./examples/example.json) file you can find here as a stepping stool.
 
-![gif for property creation](https://media.giphy.com/media/YZRIUu7uKkSc0U7uyo/giphy-downsized-large.gif?cid=790b761106f1fc58b09381922463fd2e06cc36992f02860c&rid=giphy-downsized-large.gif&ct=g)
+![gif for property creation](https://media.giphy.com/media/YZRIUu7uKkSc0U7uyo/giphy-downsized.gif?cid=790b76113bc80f8bd1362c832c3086f14db0b405536b2262&rid=giphy-downsized.gif&ct=g)
 
 4. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
 
-![gif for using extension](https://media.giphy.com/media/BKyfLNEwpxNiiGD5O9/giphy-downsized-large.gif?cid=790b76118fd0d366939eb128c3f721f794a3b8445b297d8f&rid=giphy-downsized-large.gif&ct=g)
+![gif for using extension](https://media.giphy.com/media/BKyfLNEwpxNiiGD5O9/giphy-downsized.gif?cid=790b76118fd0d366939eb128c3f721f794a3b8445b297d8f&rid=giphy-downsized.gif&ct=g)
 
 ## Things to Know
 1. In your properties file, not every "object" is mandatory. All possible objects are listed below; mandatory objects have a `*` next to them. DO NOT include the asterix in the key-names in your properties file (use [example.json](./examples/example.json) as a template).
