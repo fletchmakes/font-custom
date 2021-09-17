@@ -13,21 +13,25 @@ All you'll need is a `font atlas` (i.e. a grid-based arrangement of the characte
     * No, unfortunately it does not create font files. It does, however, give you the option to use your custom font within Aseprite as if you were using the `Edit > Insert Text` menu option. If you'd like to create font files based on a pixel map, check out [this itch.io project](https://yellowafterlife.itch.io/pixelfont)!
 * Why aren't special characters like `Ð`, `Þ`, `Æ`, or others working?
     * Unfortunately, for now, this extension can only handle the ASCII characters at the moment. I am investigating how we can modify the extension in the future to allow for (full) UTF-8, UTF-16 and UTF-32 compliant characters!
+* Are there other Aseprite extensions / scripts related to this?
+    * Of course! Here's a list of projects I know about thus far:
+        * [PixelFont](https://yellowafterlife.itch.io/pixelfont)!
+        * [Write Tool For Aseprite](https://bowgrape.itch.io/write-tool)
 
 ## How to Use Font Custom
 
 1. Download this extension by visiting the releases page!
 2. Create a pixel art font based on a grid with standard height and width. Don't worry about kerning, character widths, and etc; the next step will handle that. **Save this file as `.png`, `.ase`, or `.aseprite`!**
 
-![gif for font creation](./assets/font_creation.gif)
+![gif for font creation](https://giphy.com/gifs/rPHEAnZYVDzcJ5ibR1)
 
 3. Create a properties file with the extension `.json`. The data has to be formatted in a special way, so I recommend using the [example.json](./examples/example.json) file you can find here as a stepping stool.
 
-![gif for property creation](./assets/properties_creation.gif)
+![gif for property creation](https://giphy.com/gifs/YZRIUu7uKkSc0U7uyo)
 
 4. In Aseprite, simply install this extension (only have to do this once) and navigate to `Edit > FX > Use Custom Font` and follow the dialog prompts to include text with your custom font in your Aseprite project!
 
-![gif for using extension](./assets/using_extension.gif)
+![gif for using extension](https://giphy.com/gifs/BKyfLNEwpxNiiGD5O9)
 
 ## Things to Know
 1. In your properties file, not every "object" is mandatory. All possible objects are listed below; mandatory objects have a `*` next to them. DO NOT include the asterix in the key-names in your properties file (use [example.json](./examples/example.json) as a template).

@@ -315,6 +315,12 @@ dlg:button {
             return
         end
 
+        local checkExt = app.fs.fileExtension(props.sprite_path)
+        if (checkExt ~= "png") and (checkExt ~= "aseprite") and (checkExt ~= "ase") then
+            create_error("Sprite in .json must have one of the following extensions: .png, .ase, .aseprite")
+            return
+        end
+
         if (not props.atlas) then
             create_error("Missing an essential object: atlas", dlg, 0)
             return

@@ -2,13 +2,13 @@
     "name": "font-custom",
     "displayName": "Font Custom",
     "description": "Create and use your custom pixel fonts!",
-    "version": "1.0",
+    "version": "1.1",
     "author": { "name": "David Fletcher",
                 "email": "david.login@aol.com",
                 "url": "https://github.com/david-fletcher/font-custom" },
     "contributors": [ ],
     "publisher": "David Fletcher",
-    "license": "GNU GPLv3",
+    "license": "MIT",
     "categories": [ "Scripts" ],
     "contributes": {
       "scripts": [
